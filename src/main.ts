@@ -23,7 +23,6 @@ async function bootstrap() {
     .setTitle('Contest App API')
     .setDescription('API documentation with cookie-based authentication')
     .setVersion('1.0')
-    .addServer(`http://localhost:${port}`)
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
