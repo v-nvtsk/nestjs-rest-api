@@ -2,8 +2,8 @@ import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
-  ManyToOne,
   JoinColumn,
+  OneToOne,
 } from 'typeorm';
 import { Users } from './users.entity';
 
@@ -12,7 +12,7 @@ export class UserTokens {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Users, (user) => user.id, { onDelete: 'CASCADE' })
+  @OneToOne(() => Users)
   @JoinColumn({ name: 'user_id' })
   user: Users;
 

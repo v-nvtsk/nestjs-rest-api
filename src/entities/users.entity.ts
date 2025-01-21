@@ -18,9 +18,9 @@ export class Users {
   @Column({ type: 'varchar', length: 255 })
   password: string;
 
-  @ManyToOne(() => Roles, (role) => role.id, {
-    nullable: true,
-    onDelete: 'SET NULL',
+  @ManyToOne(() => Roles, {
+    nullable: false,
+    onDelete: 'RESTRICT',
   })
   @JoinColumn({ name: 'role_id' })
   role: Roles;
