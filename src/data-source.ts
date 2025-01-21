@@ -1,6 +1,13 @@
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
-import { Users, UserTokens, Roles, Comments, Tasks } from './entities';
+import {
+  Users,
+  UserTokens,
+  Roles,
+  Comments,
+  Tasks,
+  Solutions,
+} from './entities';
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
@@ -11,13 +18,13 @@ export const AppDataSource = new DataSource({
   database: process.env.DB_NAME,
   synchronize: true,
   logging: true,
-  entities: [Users, UserTokens, Roles, Comments, Tasks],
+  entities: [Users, UserTokens, Roles, Comments, Tasks, Solutions],
   subscribers: [],
-  migrations: [process.env.TYPEORM_MIGRATIONS || 'dist/migrations/*.js'],
+  migrations: [process.env.TYPEORM_MIGRATIONS || 'dist/migrations/*.ts'],
 });
 
 AppDataSource.initialize()
   .then(() => {
     // here you can start to work with your database
   })
-  .catch((error) => console.log(error));
+  .catch((error) => console.error(error));

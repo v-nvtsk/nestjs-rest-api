@@ -14,8 +14,16 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   const port = configService.get<number>('PORT', 3300);
 
+  app.getHttpAdapter().getInstance().disable('x-powered-by');
   app.use(cookieParser());
-  app.enableCors();
+  app.enableCors({
+    origin: [
+      'https://localhost:5173',
+      'http://localhost:5173',
+      process.env.FRONT_ORIGIN,
+    ],
+    credentials: true,
+  });
   app.setGlobalPrefix('api');
 
   // Настройка Swagger
