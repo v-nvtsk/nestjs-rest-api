@@ -5,9 +5,10 @@ export const addTokenToCookies = (
   token: string,
   expiresAt: Date,
 ) => {
-  res.cookie('accessToken', token, {
+  return res.cookie('accessToken', token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'none',
+    secure: true,
     expires: expiresAt,
   });
 };
