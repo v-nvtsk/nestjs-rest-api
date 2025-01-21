@@ -6,13 +6,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AccessTokenPayload } from 'src/types';
 
-export type LoginResult = Promise<ResultOk | ResultFailed>;
-
 export interface ResultOk {
   status: 200;
   payload: {
     accessToken: string;
     expiresAt: Date;
+    id: number;
+    username: string;
   };
 }
 
@@ -20,6 +20,8 @@ export interface ResultFailed {
   status: 500 | 401;
   payload: { message: string };
 }
+
+export type LoginResult = Promise<ResultOk | ResultFailed>;
 
 @Injectable()
 export class LoginService {
@@ -33,6 +35,12 @@ export class LoginService {
   async login(username: string, password: string): LoginResult {
     try {
       const result = await this.usersRepository.findOneBy({ username });
+      if (!result) {
+        return {
+          status: 401,
+          payload: { message: 'Invalid login or password' },
+        };
+      }
       const hashedPassword = result.password;
       const userId = result.id;
       if (!hashedPassword) {
@@ -56,19 +64,25 @@ export class LoginService {
         user,
         Number(process.env.JWT_ACCESS_EXPIRES_IN),
       );
-      const oldToken = await this.userTokensRepository.findBy({ id: userId });
-      if (oldToken.length) {
-        await this.userTokensRepository.delete({ id: userId });
+      const oldToken = await this.userTokensRepository.findOne({
+        where: { user: { id: userId } },
+      });
+      if (oldToken) {
+        await this.userTokensRepository.delete({ user: { id: userId } });
       }
 
       await this.userTokensRepository.save({
-        user_id: userId,
+        user: result,
         token: accessToken,
         expires_at: expiresAt,
       });
 
-      return { status: 200, payload: { accessToken, expiresAt } };
+      return {
+        status: 200,
+        payload: { accessToken, expiresAt, id: userId, username },
+      };
     } catch (error) {
+      console.error('error: ', error);
       return {
         status: 500,
         payload: { message: `Error logging in user: ${error.message}` },

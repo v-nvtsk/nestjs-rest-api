@@ -29,15 +29,17 @@ export class RegisterService {
         );
       }
       const roleName = 'user';
-      const roleId = await this.rolesRepository.findBy({ name: roleName });
-      if (!roleId) {
+      const role = await this.rolesRepository.findOneBy({
+        name: roleName,
+      });
+      if (!role) {
         return { status: 500, message: { message: 'Role not found' } };
       }
       const hashedPassword = await hashPassword(password);
       await this.usersRepository.save({
         username,
         password: hashedPassword,
-        roleId,
+        role,
       });
       return {
         status: 201,
