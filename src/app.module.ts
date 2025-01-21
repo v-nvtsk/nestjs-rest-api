@@ -11,9 +11,27 @@ import { CommentsModule } from './features/comments/comments.module';
 import { Solutions } from './entities/solutions.entity';
 import { ProfilesModule } from './features/profiles/profiles.module';
 import { DatabaseInitService } from './services/db-init/db-init';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
+    ThrottlerModule.forRoot([
+      {
+        name: 'short',
+        ttl: 1000,
+        limit: 5,
+      },
+      {
+        name: 'medium',
+        ttl: 10000,
+        limit: 20,
+      },
+      {
+        name: 'long',
+        ttl: 60000,
+        limit: 100,
+      },
+    ]),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
