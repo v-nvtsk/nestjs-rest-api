@@ -1,4 +1,9 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+} from 'typeorm';
 
 @Entity('comments')
 export class Comments {
@@ -14,6 +19,6 @@ export class Comments {
   @Column({ type: 'text' })
   content: string;
 
-  @Column({ type: 'timestamp' })
+  @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;
 }

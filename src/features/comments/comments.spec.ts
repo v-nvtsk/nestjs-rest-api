@@ -28,13 +28,16 @@ describe('CommentsController', () => {
 
   describe('getByTaskId', () => {
     it('should return an array of comments', async () => {
-      const result = {
-        id: 0,
-        task_id: 555,
-        user_id: 1,
-        content: 'test',
-        created_at: new Date(),
-      };
+      const result = [
+        {
+          id: 0,
+          task_id: 555,
+          user_id: 1,
+          username: 'test',
+          content: 'test',
+          created_at: new Date().toString(),
+        },
+      ];
       jest.spyOn(commentsService, 'getByTaskId').mockResolvedValue(result);
 
       expect(await commentsController.getById(1)).toBe(result);

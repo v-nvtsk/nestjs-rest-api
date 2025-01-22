@@ -22,8 +22,8 @@ export class CommentsController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Get all comments by task ID' })
-  getById(@Param('id') id: number) {
-    return this.commentsService.getByTaskId(id);
+  async getById(@Param('id') id: number) {
+    return await this.commentsService.getByTaskId(id);
   }
 
   @Post()
@@ -42,15 +42,14 @@ export class CommentsController {
     @Res() res: Response,
   ) {
     const { content, task_id } = body;
-    const user_id = req['user']['id'];
-
+    const { userId: user_id, username } = req['user'];
     try {
       const result = await this.commentsService.create({
         content,
         task_id,
         user_id,
       });
-      return res.status(201).json(result);
+      return res.status(201).json({ ...result, username });
     } catch (_) {
       res.status(500).json({ message: 'Server failed on comment creation' });
     }
