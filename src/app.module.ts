@@ -12,6 +12,7 @@ import { Solutions } from './entities/solutions.entity';
 import { ProfilesModule } from './features/profiles/profiles.module';
 import { DatabaseInitService } from './services/db-init/db-init';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { SolutionsModule } from './features/solutions/solutions.module';
 
 @Module({
   imports: [
@@ -54,6 +55,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
     TasksModule,
     CommentsModule,
     ProfilesModule,
+    SolutionsModule,
   ],
   controllers: [],
 

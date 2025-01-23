@@ -6,6 +6,7 @@ import {
   Param,
   UseGuards,
   Put,
+  Query,
 } from '@nestjs/common';
 import { SolutionsService } from './solutions.service';
 import { AuthGuard } from '@/guards/auth.guard';
@@ -33,25 +34,29 @@ export class SolutionsController {
     return this.solutionsService.create(body);
   }
 
-  @Get(':id')
-  @ApiOperation({ summary: 'Get all tasks' })
+  @Get()
+  @ApiOperation({
+    summary: 'Get solution of user user_id for task with task_id',
+  })
   @ApiQuery({
     name: 'task_id',
     type: Number,
-    required: false,
+    required: true,
     example: 0,
     description: 'task_id',
   })
   @ApiQuery({
     name: 'user_id',
     type: Number,
-    required: false,
+    required: true,
     example: 10,
     description: 'user_id',
   })
-  async findAllForTask(@Param() params: { task_id: number; user_id: number }) {
-    const { task_id, user_id } = params;
-    return await this.solutionsService.findAll(task_id, user_id);
+  async findForTaskAndUser(
+    @Query() query: { task_id: number; user_id: number },
+  ) {
+    const { task_id, user_id } = query;
+    return await this.solutionsService.findSolution(task_id, user_id);
   }
 
   @Put(':id')

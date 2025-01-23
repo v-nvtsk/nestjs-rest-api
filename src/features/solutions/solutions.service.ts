@@ -21,8 +21,8 @@ export class SolutionsService {
     });
   }
 
-  async findAll(task_id: number, user_id: number) {
-    return await this.solutionsRepository.find({
+  async findSolution(task_id: number, user_id: number) {
+    return await this.solutionsRepository.findOne({
       where: {
         task: { id: task_id },
         user: { id: user_id },
