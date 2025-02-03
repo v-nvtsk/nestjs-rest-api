@@ -11,11 +11,22 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install Packages
-        run: |
-          npm ci
+        run: npm ci
 
       - name: Lint
         run: npm run lint
 
       - name: Test
         run: npm test
+
+      - name: Trigger Deploy
+        if: ${{ github.event_name == 'push' && success() }}
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: "deploy.yaml",
+              ref: context.ref,
+            });

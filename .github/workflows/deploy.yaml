@@ -1,0 +1,39 @@
+name: deploy
+
+on: pull_request
+permissions:
+  contents: write
+jobs:
+  deploy:
+    runs-on: self-hosted
+    environment: server
+    steps:
+      - uses: actions/checkout@v4.2.2
+      - uses: actions/setup-node@v4.1.0
+        with:
+          node-version: '22'
+
+      - name: build
+        run: |
+          npm ci
+          npm run build
+          
+      - name: Export Secrets to .env
+        run: |
+          echo "ADMIN_USERNAME${{ secrets.ADMIN_USERNAME }}" >> .env
+          echo "ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}" >> .env
+          echo "PORT=${{ secrets.PORT }}" >> .env
+          echo "DB_USER=${{ secrets.DB_USER }}" >> .env
+          echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
+          echo "DB_DATABASE=${{ secrets.DB_DATABASE }}" >> .env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env          
+          echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
+          echo "JWT_ACCESS_SECRET=${{ secrets.JWT_ACCESS_SECRET }}" >> .env
+          echo "JWT_ACCESS_EXPIRES_IN=${{ secrets.JWT_ACCESS_EXPIRES_IN }}" >> .env
+          echo "DEV_MODE=${{ secrets.DEV_MODE }}" >> .env
+          echo "TYPEORM_ENTITIES=${{ secrets.TYPEORM_ENTITIES }}" >> .env
+          echo "TYPEORM_MIGRATIONS=${{ secrets.TYPEORM_MIGRATIONS }}" >> .env
+          echo "FRONT_ORIGIN=${{ secrets.FRONT_ORIGIN }}" >> .env
+          echo "PRIVKEY_PATH=${{ secrets.PRIVKEY_PATH }}" >> .env
+          echo "FULLCHAINKEY_PATH=${{ secrets.FULLCHAINKEY_PATH }}" >> .env
