@@ -1,5 +1,9 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { ProfilesService } from './profiles.service';
+
+export interface Filter {
+  role: string;
+}
 
 @Controller('profiles')
 export class ProfilesController {
@@ -8,5 +12,10 @@ export class ProfilesController {
   @Get(':id')
   async findOne(@Param('id') id: string | number) {
     return await this.profilesService.getProfile(+id);
+  }
+
+  @Post('all')
+  async findAll(@Body() body: { filter: Filter }) {
+    return await this.profilesService.getProfiles(body.filter);
   }
 }
