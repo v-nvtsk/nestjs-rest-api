@@ -27,4 +27,7 @@ export class Users {
 
   @Column({ type: 'varchar', length: 50, default: 'registered' })
   state: string;
+
+  @Column({ type: 'int', default: 0 })
+  rating: number;
 }

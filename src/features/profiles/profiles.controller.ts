@@ -1,11 +1,21 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ProfilesService } from './profiles.service';
-import { ApiOperation, ApiQuery } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiQuery } from '@nestjs/swagger';
+import { AuthGuard } from '../../guards/auth.guard';
 
 export interface Filter {
   role: string;
 }
 
+@UseGuards(AuthGuard)
 @Controller('profiles')
 export class ProfilesController {
   constructor(private readonly profilesService: ProfilesService) {}
@@ -26,5 +36,19 @@ export class ProfilesController {
   })
   async findAll(@Query() params: Filter) {
     return await this.profilesService.getProfiles(params);
+  }
+
+  @Put(':id')
+  @ApiOperation({ summary: 'Update profile' })
+  @ApiBody({
+    schema: {
+      example: { rating: 5 },
+    },
+  })
+  async updateProfileRating(
+    @Param('id') id: string | number,
+    @Body() { rating }: { rating: number },
+  ) {
+    return await this.profilesService.updateProfileRating(+id, rating);
   }
 }

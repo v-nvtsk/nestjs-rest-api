@@ -72,4 +72,8 @@ export class ProfilesService {
       relations: ['role'],
     });
   }
+
+  async updateProfileRating(id: number, rating: number) {
+    return await this.usersRepository.update(id, { rating });
+  }
 }
