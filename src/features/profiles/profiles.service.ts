@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Tasks, Users } from '@/entities';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Filter } from './profiles.controller';
 
 interface SolutionInfo {
   id: number;
@@ -63,5 +64,12 @@ export class ProfilesService {
     };
 
     return profile;
+  }
+
+  async getProfiles(filter: Filter) {
+    return await this.usersRepository.find({
+      where: { role: { name: filter.role } },
+      relations: ['role'],
+    });
   }
 }
