@@ -21,14 +21,9 @@ export class TasksService {
   }
 
   async getAll({ offset = 0, limit = 10, category, difficulty, tags = [] }) {
-    const query = await this.tasksRepository
+    const query = this.tasksRepository
       .createQueryBuilder('tasks')
-      .select([
-        'tasks.id',
-        'tasks.title',
-        'tasks.difficulty',
-        'tasks.category',
-      ]);
+      .select(['*']);
 
     if (category) {
       query.andWhere('tasks.category = :category', { category });
