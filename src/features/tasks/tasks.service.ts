@@ -82,6 +82,7 @@ export class TasksService {
       tags,
       additional_materials,
       category,
+      code,
     },
   ) {
     return await this.tasksRepository.update(id, {
@@ -92,6 +93,7 @@ export class TasksService {
       tags,
       additional_materials,
       category,
+      code,
     });
   }
 }
