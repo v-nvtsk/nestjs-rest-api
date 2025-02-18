@@ -50,9 +50,7 @@ export class ProfilesService {
       )
       .getRawMany();
 
-    const rating = solutions.reduce((sum, { mark }) => {
-      return (sum += mark);
-    }, 0);
+    const { rating } = userData;
 
     const profile: UserProfile = {
       id: userId,
