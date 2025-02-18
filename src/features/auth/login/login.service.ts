@@ -13,6 +13,7 @@ export interface ResultOk {
     expiresAt: Date;
     id: number;
     username: string;
+    role: string;
   };
 }
 
@@ -34,7 +35,10 @@ export class LoginService {
 
   async login(username: string, password: string): LoginResult {
     try {
-      const result = await this.usersRepository.findOneBy({ username });
+      const result = await this.usersRepository.findOne({
+        where: { username },
+        relations: ['role'],
+      });
       if (!result) {
         return {
           status: 401,
@@ -71,6 +75,8 @@ export class LoginService {
         await this.userTokensRepository.delete({ user: { id: userId } });
       }
 
+      const role = result.role.name;
+
       await this.userTokensRepository.save({
         user: result,
         token: accessToken,
@@ -79,7 +85,7 @@ export class LoginService {
 
       return {
         status: 200,
-        payload: { accessToken, expiresAt, id: userId, username },
+        payload: { accessToken, expiresAt, id: userId, username, role },
       };
     } catch (error) {
       console.error('error: ', error);

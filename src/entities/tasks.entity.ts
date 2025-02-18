@@ -36,4 +36,7 @@ export class Tasks {
 
   @Column('text', { array: true })
   additional_materials: string[];
+
+  @Column({ type: 'text', default: '' })
+  code: string;
 }
