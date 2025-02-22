@@ -21,14 +21,7 @@ export class TasksService {
   }
 
   async getAll({ offset = 0, limit = 10, category, difficulty, tags = [] }) {
-    const query = await this.tasksRepository
-      .createQueryBuilder('tasks')
-      .select([
-        'tasks.id',
-        'tasks.title',
-        'tasks.difficulty',
-        'tasks.category',
-      ]);
+    const query = this.tasksRepository.createQueryBuilder('tasks').select();
 
     if (category) {
       query.andWhere('tasks.category = :category', { category });
@@ -89,6 +82,7 @@ export class TasksService {
       tags,
       additional_materials,
       category,
+      code,
     },
   ) {
     return await this.tasksRepository.update(id, {
@@ -99,6 +93,7 @@ export class TasksService {
       tags,
       additional_materials,
       category,
+      code,
     });
   }
 }

@@ -166,6 +166,7 @@ export class TasksController {
       tags,
       additional_materials,
       category,
+      code,
     } = req.body;
 
     try {
@@ -177,6 +178,7 @@ export class TasksController {
         tags,
         additional_materials,
         category,
+        code,
       });
       res.status(200).json(result.raw);
     } catch (_) {

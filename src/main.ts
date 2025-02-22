@@ -20,6 +20,8 @@ async function bootstrap() {
     origin: [
       'https://localhost:5173',
       'http://localhost:5173',
+      'https://localhost:4200',
+      'http://localhost:4200',
       process.env.FRONT_ORIGIN,
     ],
     credentials: true,
