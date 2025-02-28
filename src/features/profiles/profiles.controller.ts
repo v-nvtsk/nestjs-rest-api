@@ -10,6 +10,7 @@ import {
 import { ProfilesService } from './profiles.service';
 import { ApiBody, ApiOperation, ApiQuery } from '@nestjs/swagger';
 import { AuthGuard } from '../../guards/auth.guard';
+import { Users } from '../../entities';
 
 export interface Filter {
   role: string;
@@ -39,7 +40,7 @@ export class ProfilesController {
   }
 
   @Put(':id')
-  @ApiOperation({ summary: 'Update profile' })
+  @ApiOperation({ summary: 'Update profile rating' })
   @ApiBody({
     schema: {
       example: { rating: 5 },
@@ -50,5 +51,22 @@ export class ProfilesController {
     @Body() { rating }: { rating: number },
   ) {
     return await this.profilesService.updateProfileRating(+id, rating);
+  }
+
+  @Put('update/:id')
+  @ApiOperation({ summary: 'Update profile' })
+  @ApiBody({
+    schema: {
+      example: {
+        username: 'newUsername',
+        rating: 5,
+      },
+    },
+  })
+  async updateProfile(
+    @Param('id') id: string | number,
+    @Body() profile: Partial<Users>,
+  ) {
+    return await this.profilesService.updateProfile(+id, profile);
   }
 }

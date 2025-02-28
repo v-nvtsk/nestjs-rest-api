@@ -74,4 +74,30 @@ export class ProfilesService {
   async updateProfileRating(id: number, rating: number) {
     return await this.usersRepository.update(id, { rating });
   }
+
+  async updateProfile(id: number, profile: Partial<Users>): Promise<Users> {
+    // Фильтруем нежелательные поля
+    const { id: _, username: __, ...safeProfile } = profile;
+
+    // Загружаем существующий профиль с отношением role
+    const existingProfile = await this.usersRepository.findOne({
+      where: { id },
+      relations: ['role'],
+    });
+    if (!existingProfile) {
+      throw new Error('Profile not found');
+    }
+
+    // Обновляем только безопасные поля
+    if (safeProfile.password !== undefined)
+      existingProfile.password = safeProfile.password;
+    if (safeProfile.role !== undefined) existingProfile.role = safeProfile.role; // Обновляем отношение
+    if (safeProfile.state !== undefined)
+      existingProfile.state = safeProfile.state;
+    if (safeProfile.rating !== undefined)
+      existingProfile.rating = safeProfile.rating;
+
+    // Сохраняем изменения
+    return await this.usersRepository.save(existingProfile);
+  }
 }
