@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Tasks } from 'src/entities';
+import { Tasks, Users } from 'src/entities';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -8,6 +8,8 @@ export class TasksService {
   constructor(
     @InjectRepository(Tasks)
     private tasksRepository: Repository<Tasks>,
+    @InjectRepository(Users)
+    private usersRepository: Repository<Users>,
   ) {}
 
   async getAllCategories() {
@@ -56,8 +58,23 @@ export class TasksService {
     tags,
     additional_materials,
     category,
-  }) {
-    const task = await this.tasksRepository.save({
+    user_id,
+  }: {
+    title: string;
+    description: string;
+    examples: string;
+    difficulty: string;
+    tags: string[];
+    additional_materials: string[];
+    category: string;
+    user_id: number;
+  }): Promise<Tasks> {
+    const user = await this.usersRepository.findOne({ where: { id: user_id } });
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const task = this.tasksRepository.create({
       title,
       description,
       examples,
@@ -65,11 +82,10 @@ export class TasksService {
       tags,
       additional_materials,
       category,
+      user,
     });
 
-    const result = await this.tasksRepository.save(task);
-
-    return result;
+    return await this.tasksRepository.save(task);
   }
 
   async update(
