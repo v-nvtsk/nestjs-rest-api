@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Tasks, Users } from '@/entities';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Filter } from './profiles.controller';
 
 interface SolutionInfo {
   id: number;
@@ -49,9 +50,7 @@ export class ProfilesService {
       )
       .getRawMany();
 
-    const rating = solutions.reduce((sum, { mark }) => {
-      return (sum += mark);
-    }, 0);
+    const { rating } = userData;
 
     const profile: UserProfile = {
       id: userId,
@@ -63,5 +62,42 @@ export class ProfilesService {
     };
 
     return profile;
+  }
+
+  async getProfiles(filter: Filter) {
+    return await this.usersRepository.find({
+      where: { role: { name: filter.role } },
+      relations: ['role'],
+    });
+  }
+
+  async updateProfileRating(id: number, rating: number) {
+    return await this.usersRepository.update(id, { rating });
+  }
+
+  async updateProfile(id: number, profile: Partial<Users>): Promise<Users> {
+    // Фильтруем нежелательные поля
+    const { id: _, username: __, ...safeProfile } = profile;
+
+    // Загружаем существующий профиль с отношением role
+    const existingProfile = await this.usersRepository.findOne({
+      where: { id },
+      relations: ['role'],
+    });
+    if (!existingProfile) {
+      throw new Error('Profile not found');
+    }
+
+    // Обновляем только безопасные поля
+    if (safeProfile.password !== undefined)
+      existingProfile.password = safeProfile.password;
+    if (safeProfile.role !== undefined) existingProfile.role = safeProfile.role; // Обновляем отношение
+    if (safeProfile.state !== undefined)
+      existingProfile.state = safeProfile.state;
+    if (safeProfile.rating !== undefined)
+      existingProfile.rating = safeProfile.rating;
+
+    // Сохраняем изменения
+    return await this.usersRepository.save(existingProfile);
   }
 }

@@ -1,6 +1,8 @@
 import {
   Controller,
+  Delete,
   Get,
+  HttpStatus,
   Param,
   Post,
   Put,
@@ -122,6 +124,13 @@ export class TasksController {
     } = req.body;
 
     try {
+      const { userId: user_id } = req['user'];
+      if (isNaN(user_id)) {
+        return res
+          .status(HttpStatus.UNAUTHORIZED)
+          .json({ message: 'Invalid or missing user ID' });
+      }
+
       const result = await this.tasksService.create({
         title,
         description,
@@ -130,10 +139,16 @@ export class TasksController {
         tags,
         additional_materials,
         category,
+        user_id,
       });
-      return res.status(201).json(result);
-    } catch (_) {
-      res.status(500).json({ message: 'Server failed while task creation' });
+
+      return res.status(HttpStatus.CREATED).json(result);
+    } catch (error) {
+      console.error('Task creation error:', error.message);
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        message: 'Server failed while task creation',
+        error: error.message,
+      });
     }
   }
 
@@ -166,6 +181,7 @@ export class TasksController {
       tags,
       additional_materials,
       category,
+      code,
     } = req.body;
 
     try {
@@ -177,11 +193,31 @@ export class TasksController {
         tags,
         additional_materials,
         category,
+        code,
       });
       res.status(200).json(result.raw);
     } catch (_) {
       // logger.error('Error updating task:', error);
       res.status(500).json({ message: '' });
+    }
+  }
+
+  @UseGuards(AuthGuard)
+  @Delete(':id')
+  @ApiOperation({ summary: 'Delete task by ID' })
+  @ApiBody({
+    schema: {
+      example: {
+        id: 0,
+      },
+    },
+  })
+  async deleteTask(@Param('id') id: number, @Res() res: Response) {
+    try {
+      const result = await this.tasksService.delete(id);
+      res.status(200).json(result.raw);
+    } catch (_) {
+      res.status(500).json({ message: 'Server failed on task deletion' });
     }
   }
 }

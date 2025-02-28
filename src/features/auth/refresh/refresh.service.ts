@@ -14,6 +14,7 @@ export interface ResultOk {
     expiresAt: Date;
     id: number;
     username: string;
+    role: string;
   };
 }
 
@@ -66,6 +67,11 @@ export class RefreshService {
         expires_at: expiresAt,
       });
 
+      const profile = await this.usersRepository.findOne({
+        where: { id: userFromToken.id },
+        relations: ['role'],
+      });
+
       return {
         status: 200,
         payload: {
@@ -73,6 +79,7 @@ export class RefreshService {
           expiresAt,
           id: userFromToken.id,
           username: userFromToken.username,
+          role: profile.role.name,
         },
       };
     } catch (error) {
