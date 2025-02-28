@@ -1,5 +1,6 @@
 import {
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -184,6 +185,25 @@ export class TasksController {
     } catch (_) {
       // logger.error('Error updating task:', error);
       res.status(500).json({ message: '' });
+    }
+  }
+
+  @UseGuards(AuthGuard)
+  @Delete(':id')
+  @ApiOperation({ summary: 'Delete task by ID' })
+  @ApiBody({
+    schema: {
+      example: {
+        id: 0,
+      },
+    },
+  })
+  async deleteTask(@Param('id') id: number, @Res() res: Response) {
+    try {
+      const result = await this.tasksService.delete(id);
+      res.status(200).json(result.raw);
+    } catch (_) {
+      res.status(500).json({ message: 'Server failed on task deletion' });
     }
   }
 }

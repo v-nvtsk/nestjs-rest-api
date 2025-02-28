@@ -96,4 +96,8 @@ export class TasksService {
       code,
     });
   }
+
+  async delete(id: number) {
+    return await this.tasksRepository.delete(id);
+  }
 }
